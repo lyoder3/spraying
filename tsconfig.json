@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "esnext"
+    ],
+    "target": "ES2019",
+    "experimentalDecorators": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
