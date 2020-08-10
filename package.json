@@ -10,12 +10,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/google-apps-script": "^1.0.14",
-    "clasp": "^1.0.0",
     "googleapis": "^39.2.0",
     "inquirer": "^5.0.0",
     "inquirer-autocomplete-prompt": "^1.0.1",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
+  },
+  "devDependencies": {
+    "@types/google-apps-script": "^1.0.14",
+    "clasp": "^1.0.0"
   }
 }

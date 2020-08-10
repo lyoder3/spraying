@@ -97,3 +97,28 @@ function GETCHEMICALSFROMCODE(mixCode) {
   })
   return chemicals;
 }
+
+function getUniqueChemicals(uniqueMixes) {
+  // uniqueMixes is an array with the acreage for each mix included
+  const chemicals = uniqueMixes.map((row) => {
+    return GETCHEMICALSFROMCODE(row[0]);
+  });
+  const arr = [];
+  chemicals.forEach((chemList) => chemList.forEach((chem) => arr.push(chem[0])));
+  return [...new Set(arr)];
+}
+
+function calculateTotalVolumes(uniqueMixAcreageArray) {
+  const chemicalObj = getUniqueChemicals(uniqueMixAcreageArray).reduce((obj, chemical) => ({
+    ...obj,
+    [chemical]: {214: 0, 215: 0, aerial: 0}
+  }), {});
+  const chemicalTree = convertArrayToTree(fetchChemCodesArray());
+
+}
+
+function testGetChemForTrckLoad() {
+  const mixes = [["2.2.0.0"], ["7.6.1.4&5"], ["7.0.0.4"], ["2.0.0.0"]];
+  Logger.log(getUniqueChemicals(mixes));
+
+}
