@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/google-apps-script": "^1.0.14",
+    "clasp": "^1.0.0",
     "googleapis": "^39.2.0",
     "inquirer": "^5.0.0",
     "inquirer-autocomplete-prompt": "^1.0.1",

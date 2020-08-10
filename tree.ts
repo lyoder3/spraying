@@ -10,7 +10,7 @@ class Node {
     }
 
     addNode(value: string | number) {
-        if (typeof value === "string"){
+        if (typeof value === "string") {
             const segments = value.split("/");
 
             if (segments.length === 0) {
@@ -37,7 +37,7 @@ class Node {
         return {node: node, index: this.children.length - 1};
     }
 
-    removeNode(value:string) {
+    removeNode(value: string) {
         const segments = value.split("/");
         if (segments.length === 0) {
             return;
@@ -58,15 +58,16 @@ class Node {
             existingChildNode.removeNode(segments.slice(1).join("/"));
         }
     }
+
     find(value) {
         for (const child of this.children) {
-            if (child.value=== value) {
+            if (child.value === value) {
                 return child;
             }
         }
         for (const child of this.children) {
             const nestedChildNode = child.find(value);
-            if (nestedChildNode){
+            if (nestedChildNode) {
                 return nestedChildNode;
             }
         }
@@ -87,8 +88,9 @@ class Tree {
     remove(path) {
         this.root.removeNode(path);
     }
-    find (value) {
-        if (this.root.value===value) {
+
+    find(value) {
+        if (this.root.value === value) {
             return this.root;
         }
         return this.root.find(value);
