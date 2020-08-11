@@ -25,10 +25,6 @@ function getChemicalsForCode(splitByAmpersand: string[], chemicalTree: Tree, cat
   return chemicals;
 }
 
-function testGetChemicals() {
-  Logger.log(GETCHEMICALSFROMCODE("2.0.0.0"));
-}
-
 function GETCHEMICALSFROMCODE(mixCode) {
   const chemicalTree = makeChemicalTree();
 
@@ -45,16 +41,12 @@ function GETCHEMICALSFROMCODE(mixCode) {
       switch (index) {
         case 0:
           return getChemicalsForCode(splitByAmpersand, chemicalTree, "base", chemicals);
-          break;
         case 1:
           return getChemicalsForCode(splitByAmpersand, chemicalTree, "secondary", chemicals);
-          break;
         case 2:
           return getChemicalsForCode(splitByAmpersand, chemicalTree, "insecticide", chemicals);
-          break;
         case 3:
           return getChemicalsForCode(splitByAmpersand, chemicalTree, "herbicide", chemicals);
-          break;
         default:
           throw new Error("Array index is out of range");
       }
@@ -74,10 +66,6 @@ function getUniqueChemicals(uniqueMixes) {
   return [...new Set(arr)];
 }
 
-function testGetUniqueChemicals() {
-  const uniquMixe = [["2.2.0.0", "302.26", "69.94", "0"], ["7.6.1.4&5", "34.92", "77.6", "0"]];
-  Logger.log(getUniqueChemicals(uniquMixe));
-}
 
 function calculateTotalVolumes(uniqueMixAcreageArray) {
   const chemicalObj = getUniqueChemicals(uniqueMixAcreageArray).reduce((obj, chemical) => ({
