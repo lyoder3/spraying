@@ -109,10 +109,7 @@ function calculateTotalVolumes(uniqueMixAcreageArray) {
   }), {});
 
   for (const row of uniqueMixAcreageArray) {
-    const mix = row[0];
-    const twoFourteenAcres = row[1];
-    const twoFifteenAcres = row[2];
-    const aerialAcres = row[3];
+    const [mix, twoFourteenAcres, twoFifteenAcres, aerialAcres] = row;
 
     const chemicals = GETCHEMICALSFROMCODE(mix);
     for (const chemical of chemicals) {
@@ -121,6 +118,7 @@ function calculateTotalVolumes(uniqueMixAcreageArray) {
       chemicalObj[chemical].aerial += aerialAcres;
     }
   }
-  return Object.keys(chemicalObj).map((key) => [key, chemicalObj[key][214], chemicalObj[key][215], chemicalObj[key].aerial]);
+  return Object.keys(chemicalObj)
+      .map((key) => [key, chemicalObj[key][214], chemicalObj[key][215], chemicalObj[key].aerial]);
 }
 
