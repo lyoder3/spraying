@@ -1,7 +1,7 @@
 function fetchChemCodesArray() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const chemCodesSheet = ss.getSheetByName("codes");
-  return chemCodesSheet.getRange("A2:F").getValues();
+  return chemCodesSheet.getRange(2, 1, chemCodesSheet.getLastRow() - 1, 6).getValues();
 }
 
 function convertArrayToTree(arr) {
@@ -16,6 +16,19 @@ function makeChemicalTree() {
   return convertArrayToTree(fetchChemCodesArray());
 }
 
+function getChemicalsForCode(splitByAmpersand: string[], chemicalTree: Tree, category: "base" | "secondary" | "insecticide" | "herbicide", chemicals: any[]) {
+  const categoryNode = chemicalTree.find(category);
+  splitByAmpersand.forEach((code) => {
+    const chemicalsForCode = categoryNode.find(code).children;
+    chemicalsForCode.forEach((chemical) => chemicals.push(chemical.value));
+  })
+  return chemicals;
+}
+
+function testGetChemicals() {
+  Logger.log(GETCHEMICALSFROMCODE("2.0.0.0"));
+}
+
 function GETCHEMICALSFROMCODE(mixCode) {
   const chemicalTree = makeChemicalTree();
 
@@ -23,72 +36,30 @@ function GETCHEMICALSFROMCODE(mixCode) {
 
   const justTheCodes = splitMix.slice(1);
 
-  const chemicalNodes = [];
+  return justTheCodes.reduce((chemicals, code, index) => {
+    const splitByAmpersand = code.split("&");
 
-  justTheCodes.forEach((code, index) => {
-        const splitByAmp = code.split("&");
-
-        if (code === "0") {
-          return;
-        } else {
-          switch (index) {
-            case 0:
-              const chemicalsForCode = chemicalTree.root.find("base").find(splitByAmp[0]);
-              chemicalNodes.push(chemicalsForCode);
-              break;
-            case 1:
-              if (splitByAmp.length === 1) {
-                const chemicalsForCode = chemicalTree.root.find("secondary").find(splitByAmp[0]);
-                chemicalNodes.push(chemicalsForCode);
-              } else {
-                splitByAmp.forEach((code) => {
-                  const chemicalsForCode = chemicalTree.root.find("secondary").find(code);
-                  chemicalNodes.push(chemicalsForCode);
-                })
-              }
-              break;
-            case 2:
-              if (splitByAmp.length === 1) {
-                const chemicalsForCode = chemicalTree.root.find("insecticide").find(splitByAmp[0]);
-                chemicalNodes.push(chemicalsForCode);
-              } else {
-                splitByAmp.forEach((code) => {
-                  const chemicalsForCode = chemicalTree.root.find("insecticide").find(code);
-                  chemicalNodes.push(chemicalsForCode);
-                })
-              }
-              break;
-            case 3:
-              if (splitByAmp.length === 1) {
-                const chemicalsForCode = chemicalTree.root.find("herbicide").find(splitByAmp[0]);
-                chemicalNodes.push(chemicalsForCode);
-              } else {
-                splitByAmp.forEach((code) => {
-                  const chemicalsForCode = chemicalTree.root.find("herbicide").find(code);
-                  chemicalNodes.push(chemicalsForCode);
-                })
-              }
-              break;
-            default:
-              throw new Error("Array index is out of range");
-          }
-
-        }
-      }
-  )
-
-  const chemicals = [];
-
-  chemicalNodes.forEach((node) => {
-    if (node.children.length === 1) {
-      chemicals.push([node.children[0].value]);
+    if (code === "0") {
+      return chemicals;
     } else {
-      for (const child of node.children) {
-        chemicals.push([child.value]);
+      switch (index) {
+        case 0:
+          return getChemicalsForCode(splitByAmpersand, chemicalTree, "base", chemicals);
+          break;
+        case 1:
+          return getChemicalsForCode(splitByAmpersand, chemicalTree, "secondary", chemicals);
+          break;
+        case 2:
+          return getChemicalsForCode(splitByAmpersand, chemicalTree, "insecticide", chemicals);
+          break;
+        case 3:
+          return getChemicalsForCode(splitByAmpersand, chemicalTree, "herbicide", chemicals);
+          break;
+        default:
+          throw new Error("Array index is out of range");
       }
     }
-  })
-  return chemicals;
+  }, []);
 }
 
 function getUniqueChemicals(uniqueMixes) {
@@ -97,10 +68,16 @@ function getUniqueChemicals(uniqueMixes) {
     return GETCHEMICALSFROMCODE(row[0]);
   });
   const arr = [];
-  chemicals.forEach((chemList) => chemList.forEach((chem) => arr.push(chem[0])));
+  chemicals.forEach((mix) => {
+    mix.forEach(chemical => arr.push(chemical))
+  });
   return [...new Set(arr)];
 }
 
+function testGetUniqueChemicals() {
+  const uniquMixe = [["2.2.0.0", "302.26", "69.94", "0"], ["7.6.1.4&5", "34.92", "77.6", "0"]];
+  Logger.log(getUniqueChemicals(uniquMixe));
+}
 
 function calculateTotalVolumes(uniqueMixAcreageArray) {
   const chemicalObj = getUniqueChemicals(uniqueMixAcreageArray).reduce((obj, chemical) => ({
