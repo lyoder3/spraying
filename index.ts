@@ -7,24 +7,17 @@ function fetchChemCodesArray() {
 function convertArrayToTree(arr) {
   const chemicalTree = new Tree("root");
   arr.forEach((row) => {
-    const [group, groupId, name] = row.slice(0, 3);
-    const chemData = row.slice(3);
-
     chemicalTree.add(row.slice(0, 3).join("/"))
-
-    const groupNode = chemicalTree.root.children.filter(child => child.value === group)[0];
-    const groupIdNode = groupNode.children.filter(child => child.value === groupId)[0];
-    const chemicalNode = groupIdNode.children.filter(child => child.value === name)[0];
-
-    chemData.forEach((item) => {
-      chemicalNode.addNode(item)
-    })
   })
   return chemicalTree;
 }
 
+function makeChemicalTree() {
+  return convertArrayToTree(fetchChemCodesArray());
+}
+
 function GETCHEMICALSFROMCODE(mixCode) {
-  const chemicalTree = convertArrayToTree(fetchChemCodesArray());
+  const chemicalTree = makeChemicalTree();
 
   const splitMix = mixCode.toString().match(/(\d)(?:\.)(\d&?\d?)(?:\.)(\d&?\d?)(?:\.)(\d&?\d?)/);
 
@@ -108,17 +101,26 @@ function getUniqueChemicals(uniqueMixes) {
   return [...new Set(arr)];
 }
 
+
 function calculateTotalVolumes(uniqueMixAcreageArray) {
   const chemicalObj = getUniqueChemicals(uniqueMixAcreageArray).reduce((obj, chemical) => ({
     ...obj,
     [chemical]: {214: 0, 215: 0, aerial: 0}
   }), {});
-  const chemicalTree = convertArrayToTree(fetchChemCodesArray());
 
+  for (const row of uniqueMixAcreageArray) {
+    const mix = row[0];
+    const twoFourteenAcres = row[1];
+    const twoFifteenAcres = row[2];
+    const aerialAcres = row[3];
+
+    const chemicals = GETCHEMICALSFROMCODE(mix);
+    for (const chemical of chemicals) {
+      chemicalObj[chemical][214] += twoFourteenAcres;
+      chemicalObj[chemical][215] += twoFifteenAcres;
+      chemicalObj[chemical].aerial += aerialAcres;
+    }
+  }
+  return Object.keys(chemicalObj).map((key) => [key, chemicalObj[key][214], chemicalObj[key][215], chemicalObj[key].aerial]);
 }
 
-function testGetChemForTrckLoad() {
-  const mixes = [["2.2.0.0"], ["7.6.1.4&5"], ["7.0.0.4"], ["2.0.0.0"]];
-  Logger.log(getUniqueChemicals(mixes));
-
-}
