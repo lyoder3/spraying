@@ -1,0 +1,8 @@
+{
+  "mode": "modules",
+  "out": "docs1",
+  "in": "./src/",
+  "exclude": "src/test.ts",
+  "tutorials-map": "./tutorials/tutorials.json",
+  "tutorials-directory": "./tutorials"
+}
