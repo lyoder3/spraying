@@ -5,6 +5,7 @@
 
 import { Chemical } from './chemical';
 import { ChemicalList } from './chemicalList';
+import { SprayMix } from './mix';
 
 /**
  * @param array {string[][]} - A list of rows of the chemcodes data from google sheets
@@ -45,7 +46,7 @@ function getChemicalList() {
  * This format is easy to work with in the code but needs to be separated out to be ouptut
  * to an actual Google Sheet. Hence why this function is in the "helpers" file.
  */
-function calculateMixAcresPerTruck() {
+function getMixAcresByTruck() {
   const data = getWeekSheetData();
   const totalAcreage = {};
   // Pull out acreage and add it to total for that mix and truck
@@ -90,17 +91,42 @@ function getSheetByRegex(regex: RegExp) {
 /**
  * A function that gets the unique chemicals that are required for a given week's sprays
  */
-function getUniqueChemicals() {
+function getChemicalAmtPerTruck() {
   const weeklySheet = getWeekSheetData();
-  const uniqueMixes = [];
-  const uniqueChemicals = [];
+  const chemList = getChemicalList();
+  const mixAcresByTruck = getMixAcresByTruck();
+  const chemicalAmtByTruck = {};
+  const truckList = ['214', '215', 'Aerial'];
+
+  for (const truck of truckList) {
+    for (const mix in mixAcresByTruck) {
+      const mixObj = new SprayMix(mix, chemList);
+      const chemicals = mixObj.names;
+      chemicals.forEach(chemical => {
+        if (mixAcresByTruck[mix][truck] > 0) {
+          const chemicalObj = mixObj.getChemical(chemical);
+          chemicalAmtByTruck[chemical] = chemicalAmtByTruck[chemical] || {};
+          chemicalAmtByTruck[chemical][truck] =
+            chemicalAmtByTruck[chemical][truck] || 0;
+          const newAmt = Math.ceil(
+            chemicalObj.getAmountOfApplication(mixAcresByTruck[mix][truck]) *
+              1.1
+          );
+          chemicalAmtByTruck[chemical][truck] += newAmt;
+          chemicalAmtByTruck[chemical]['unit'] =
+            chemicalAmtByTruck[chemical]['unit'] || chemicalObj.unit;
+        }
+      });
+    }
+  }
+  return chemicalAmtByTruck;
 }
 
 export {
   createList,
   getChemicalList,
-  calculateMixAcresPerTruck,
+  getMixAcresByTruck,
   getWeekSheetData,
   getSheetByRegex,
-  getUniqueChemicals,
+  getChemicalAmtPerTruck,
 };

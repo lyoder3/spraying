@@ -1,4 +1,8 @@
-import { calculateMixAcresPerTruck, getChemicalList } from './helpers';
+import {
+  getMixAcresByTruck,
+  getChemicalList,
+  getChemicalAmtPerTruck,
+} from './helpers';
 import { SprayMix } from './mix';
 
 /**
@@ -26,7 +30,7 @@ function MIXACRESPERTRUCK(): string[][] {
    * See {@link calculateMixAcresPerTruck} in helpers file
    * @type {object}
    */
-  const totalAcreage: object = calculateMixAcresPerTruck();
+  const totalAcreage: object = getMixAcresByTruck();
   const finalArray = [['Mix', '214 Acres', '215 Acres', 'Aerial Acres']];
   for (let mix in totalAcreage) {
     finalArray.push([
@@ -50,4 +54,20 @@ function MIXCOST(mix: string, acreage: number): number {
   const chemList = getChemicalList();
   const mixObj = new SprayMix(mix, chemList);
   return mixObj.cost * acreage;
+}
+
+function TRUCKLOADING() {
+  const chemicalAmtsByTruck = getChemicalAmtPerTruck();
+  const headers = ['Chemical', '214 Amt', '215 Amt', 'Aerial Amt', 'Unit'];
+  const outputArr = [headers];
+
+  for (const chemical in chemicalAmtsByTruck) {
+    const name = chemical;
+    const truck214Amt = chemicalAmtsByTruck[chemical]['214'];
+    const truck215Amt = chemicalAmtsByTruck[chemical]['215'];
+    const aerialAmt = chemicalAmtsByTruck[chemical]['Aerial'];
+    const unit = chemicalAmtsByTruck[chemical]['unit'];
+    outputArr.push([name, truck214Amt, truck215Amt, aerialAmt, unit]);
+  }
+  return outputArr;
 }

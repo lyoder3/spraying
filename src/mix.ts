@@ -5,6 +5,7 @@ class SprayMix {
   readonly cost: number;
   chemlist: {};
   readonly names: string[];
+  readonly chemicals: Chemical[];
 
   /**
    * Creates a SprayMix object
@@ -49,7 +50,8 @@ class SprayMix {
     this.chemlist = chemlist;
 
     this.cost = this.calculateCost();
-    this.names = this.gatherChemicalNames();
+    this.chemicals = this.getChemicals();
+    this.names = this.chemicals.map(chemical => chemical.name);
   }
 
   /**
@@ -65,25 +67,16 @@ class SprayMix {
    * and keeping a running sum of their costs per acre
    */
   private calculateCost() {
-    const chemicals = this.searchListOfChemicals();
+    const chemicals = this.getChemicals();
     return chemicals.reduce((totalCost, currentChemical) => {
       return (totalCost += currentChemical.cost);
     }, 0);
   }
   /**
-   * Returns just the names for the chemicals in the mix
-   * Private method becauase this is used in the constructor to create the name
-   * attribute which is how the names are accessed
-   */
-  private gatherChemicalNames() {
-    const chemicals = this.searchListOfChemicals();
-    return chemicals.map(currentChem => currentChem.name);
-  }
-  /**
    * Traverses the chemical list for all codes in mix object
    * @returns {Array<Chemical>} - list of Chemical objects for all chemicals in mix
    */
-  private searchListOfChemicals(): Array<Chemical> {
+  private getChemicals(): Array<Chemical> {
     const chemicals = [];
     for (const category in this.mixCodes) {
       const codesForCategory = this.mixCodes[category];
@@ -95,6 +88,18 @@ class SprayMix {
       }
     }
     return chemicals;
+  }
+  public calculateChemicalAmt(chemical: string, acres: number) {
+    const finalAmts = this.names.reduce((finalObj, currentChemical) => {
+      return { ...finalObj, [currentChemical]: 0 };
+    }, {});
+    for (const chem of this.chemicals) {
+      finalAmts[chem.name] = chem.getAmountOfApplication(acres);
+    }
+    return finalAmts[chemical];
+  }
+  public getChemical(chemical: string) {
+    return this.chemicals.find(currentChem => currentChem.name === chemical);
   }
 }
 

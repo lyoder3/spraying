@@ -65,8 +65,11 @@ class Chemical {
    * @param acres {number} - Acres chemical applied to
    * @returns {number} - The total cost of the application
    */
-  getCostOfApplication(acres: number) {
+  public getCostOfApplication(acres: number): number {
     return this.cost * acres;
+  }
+  public getAmountOfApplication(acres: number): number {
+    return this.rate * acres;
   }
 }
 
