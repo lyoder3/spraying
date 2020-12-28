@@ -1,0 +1,6 @@
+*.xlsx
+package-lock.json
+tutorials/*
+node_modules/*
+*.csv
+.DS_Store
