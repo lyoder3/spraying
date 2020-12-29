@@ -2,6 +2,10 @@ import {
   getMixAcresByTruck,
   getChemicalList,
   getChemicalAmtPerTruck,
+  DRY_UNITS,
+  convertUnits,
+  isDryUnit,
+  convertToLargestUnitOfType,
 } from './helpers';
 import { SprayMix } from './mix';
 
@@ -58,16 +62,31 @@ function MIXCOST(mix: string, acreage: number): number {
 
 function TRUCKLOADING() {
   const chemicalAmtsByTruck = getChemicalAmtPerTruck();
-  const headers = ['Chemical', '214 Amt', '215 Amt', 'Aerial Amt', 'Unit'];
-  const outputArr = [headers];
+  const outputArr = [];
+  const vehicleNames = ['214', '215', 'Aerial'];
 
   for (const chemical in chemicalAmtsByTruck) {
+    const allTruckArray = [];
     const name = chemical;
-    const truck214Amt = chemicalAmtsByTruck[chemical]['214'];
-    const truck215Amt = chemicalAmtsByTruck[chemical]['215'];
-    const aerialAmt = chemicalAmtsByTruck[chemical]['Aerial'];
-    const unit = chemicalAmtsByTruck[chemical]['unit'];
-    outputArr.push([name, truck214Amt, truck215Amt, aerialAmt, unit]);
+    const originalUnit = chemicalAmtsByTruck[chemical]['unit'];
+    const convertedUnit = isDryUnit(originalUnit) ? 'lbm' : 'gal';
+    for (const vehicle of vehicleNames) {
+      const originalAmt = chemicalAmtsByTruck[chemical][vehicle] || 0;
+      const convertedAmt = convertToLargestUnitOfType(
+        originalAmt,
+        originalUnit
+      );
+      allTruckArray.push(convertedAmt);
+    }
+    const combinedTotal = allTruckArray.reduce(
+      (sum, currentVal) => (sum += currentVal),
+      0
+    );
+    outputArr.push([name, ...allTruckArray, convertedUnit, combinedTotal]);
   }
   return outputArr;
+}
+
+function YTDCOST(): number {
+  return 1.0;
 }

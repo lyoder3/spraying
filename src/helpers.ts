@@ -108,11 +108,13 @@ function getChemicalAmtPerTruck() {
           chemicalAmtByTruck[chemical] = chemicalAmtByTruck[chemical] || {};
           chemicalAmtByTruck[chemical][truck] =
             chemicalAmtByTruck[chemical][truck] || 0;
-          const newAmt = Math.ceil(
-            chemicalObj.getAmountOfApplication(mixAcresByTruck[mix][truck]) *
-              1.1
+          const newAmt = chemicalObj.getAmountOfApplication(
+            mixAcresByTruck[mix][truck]
           );
-          chemicalAmtByTruck[chemical][truck] += newAmt;
+          chemicalAmtByTruck[chemical]['original'] =
+            chemicalAmtByTruck[chemical]['original'] || 0;
+          chemicalAmtByTruck[chemical]['original'] += newAmt;
+          chemicalAmtByTruck[chemical][truck] += newAmt * 1.1;
           chemicalAmtByTruck[chemical]['unit'] =
             chemicalAmtByTruck[chemical]['unit'] || chemicalObj.unit;
         }
@@ -121,7 +123,28 @@ function getChemicalAmtPerTruck() {
   }
   return chemicalAmtByTruck;
 }
-
+function convertUnits(amt: number, from: string, to: string) {
+  const wetUnits = { gal: 128, qt: 32, pt: 16, oz: 1 };
+  const dryUnits = { lbm: 16, ozm: 1 };
+  if (amt === 0) return 0;
+  if (from in dryUnits) {
+    return (amt * dryUnits[from]) / dryUnits[to];
+  }
+  if (from in wetUnits) {
+    return (amt * wetUnits[from]) / wetUnits[to];
+  }
+}
+function convertToLargestUnitOfType(amt: number, currentUnit: string) {
+  if (isDryUnit(currentUnit)) {
+    return Math.ceil(convertUnits(amt, currentUnit, 'lbm'));
+  } else {
+    return Math.ceil(convertUnits(amt, currentUnit, 'gal'));
+  }
+}
+function isDryUnit(unit: string) {
+  const DRY_UNITS = ['lbm', 'ozm'];
+  return DRY_UNITS.indexOf(unit) > -1;
+}
 export {
   createList,
   getChemicalList,
@@ -129,4 +152,6 @@ export {
   getWeekSheetData,
   getSheetByRegex,
   getChemicalAmtPerTruck,
+  convertToLargestUnitOfType,
+  isDryUnit,
 };
