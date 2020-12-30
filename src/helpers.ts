@@ -55,6 +55,26 @@ function getSheetByRegex(regex: RegExp) {
   return sheet;
 }
 
+function getMasterSheet(): any[][] {
+  const ms = getSheetByRegex(/Master/);
+  const data = ms.getDataRange().getValues();
+
+  return data;
+}
+
+function getMixColumns() {
+  const msData = getMasterSheet();
+  const headers = msData.shift();
+  const mixColIndices = [];
+
+  const regex = /MIX*/;
+
+  for (let i = 0; i < headers.length; i++) {
+    if (regex.test(headers[i])) mixColIndices.push(i);
+  }
+  return mixColIndices;
+}
+
 function convertUnits(amt: number, from: string, to: string) {
   const wetUnits = { gal: 128, qt: 32, pt: 16, oz: 1 };
   const dryUnits = { lbm: 16, ozm: 1 };
@@ -78,13 +98,22 @@ function isDryUnit(unit: string) {
   return DRY_UNITS.indexOf(unit) > -1;
 }
 
-function calculateCostOfMixes(mixArray: string[]): number {
+function calculateCostOfMixes(): number[] {
   const chemList = getChemicalList();
-  return mixArray.reduce((sum, currentMix) => {
-    const mixObj = new SprayMix(currentMix, chemList);
-    const cost = mixObj.cost;
-    return sum + cost;
-  }, 0);
+  const data = getMasterSheet();
+  const mixCols = getMixColumns();
+  data.shift();
+  const totalCosts = [];
+  for (const row of data) {
+    const mixes = mixCols.map(i => row[i]);
+    const filteredMixes = mixes.filter(mix => mix !== '');
+    const totalPerAcreCost = filteredMixes.reduce((sum, currentMix) => {
+      const mixObj = new SprayMix(currentMix, chemList);
+      return (sum += mixObj.cost);
+    }, 0);
+    totalCosts.push([totalPerAcreCost]);
+  }
+  return totalCosts;
 }
 
 export {

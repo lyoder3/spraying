@@ -1,13 +1,4 @@
-import {
-  getMixAcresByTruck,
-  getChemicalList,
-  getChemicalAmtPerTruck,
-  DRY_UNITS,
-  convertUnits,
-  isDryUnit,
-  convertToLargestUnitOfType,
-  calculateCostOfMixes,
-} from './helpers';
+import { getChemicalList, calculateCostOfMixes } from './helpers';
 import { SprayMix } from './mix';
 
 /**
@@ -88,6 +79,12 @@ function TRUCKLOADING() {
   return outputArr;
 }
 
-function YTDCOST(mixArray: string[], acreage: number): number {
-  return calculateCostOfMixes(mixArray) * acreage;
+function YTDCOST(): number[] {
+  return calculateCostOfMixes();
+}
+
+function logText(mixArray: string[]) {
+  const filteredArray = mixArray.filter(value => value.length > 0);
+  Logger.log(filteredArray);
+  return String(filteredArray);
 }
