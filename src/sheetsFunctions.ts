@@ -6,6 +6,7 @@ import {
   convertUnits,
   isDryUnit,
   convertToLargestUnitOfType,
+  calculateCostOfMixes,
 } from './helpers';
 import { SprayMix } from './mix';
 
@@ -87,6 +88,6 @@ function TRUCKLOADING() {
   return outputArr;
 }
 
-function YTDCOST(): number {
-  return 1.0;
+function YTDCOST(mixArray: string[], acreage: number): number {
+  return calculateCostOfMixes(mixArray) * acreage;
 }
