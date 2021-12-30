@@ -52,6 +52,20 @@ namespace Utils {
         const data = spraySheet.getDataRange().getValues();
         return data;
     }
+    export function getMasterSheet() {
+        const ms = getSheetByRegex(new RegExp("Master", "i"));
+        const data = ms.getDataRange().getValues();
+        return data;
+    }
+    export function getMixColumns(headers: Array<string>) {
+        const mixColIdices = [];
+        const regex = /MIX*/i;
+
+        for (let i = 0; i < headers.length; i++) {
+            if (regex.test(headers[i])) mixColIdices.push(i);
+        }
+        return mixColIdices;
+    }
     /**
      * @param regex {RegExp} - The regular expression to search for across the sheet names on the current SpreadSheet
      */

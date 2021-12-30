@@ -46,3 +46,23 @@ function TRUCKLOADING() {
   }
   return outputArr;
 }
+
+function YTDCOST() {
+  const chemList = Utils.getChemicalList();
+  const data = Utils.getMasterSheet();
+  const headers = data.shift();
+  const mixCols = Utils.getMixColumns(headers);
+
+  const totalCosts = [];
+
+  for (const row of data) {
+    const mixes = mixCols.map(i => row[i]);
+    const filteredMixes = mixes.filter(mix => mix!=='');
+    const totalPerAcreCost = filteredMixes.reduce((sum, currentMix) => {
+      const mixObj = SprayMix.newSprayMix(currentMix, chemList);
+      return (sum+= mixObj.cost);
+    },0);
+    totalCosts.push([totalPerAcreCost]);
+  }
+  return totalCosts;
+}
