@@ -14,13 +14,7 @@ function refreshImports() {
         return;
 
     // Unique identifier from url for the spreadsheet
-<<<<<<< HEAD
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-=======
-    const id = "1-ARhvMQn9OrzGqoc74cUZN1zAQHASZBKUiWdgnFjCWA";
-    // opens the spreadsheet
-    const ss = SpreadsheetApp.openById(id);
->>>>>>> 6b04af9e8c39fa933f05ced0570a52260673fd8c
     // Get the weather station sheet
     const sheet = ss.getSheetByName("Weather");
     // Updates the value of J5 with a random integer
