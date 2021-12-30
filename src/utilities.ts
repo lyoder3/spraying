@@ -6,9 +6,9 @@ namespace Utils {
         } | {}
     }
 
-    const ACREAGE_REGEX = new RegExp("*Acre*", "i");
-    const TRUCK_REGEX = new RegExp("*Truck*", "i");
-    const MIX_REGEX = new RegExp("*Mix*","i");
+    const ACREAGE_REGEX = new RegExp("Acre", "i");
+    const TRUCK_REGEX = new RegExp("Truck", "i");
+    const MIX_REGEX = new RegExp("Mix","i");
 
 
     /**
@@ -85,7 +85,7 @@ namespace Utils {
     {
         // Find the spray sheet and pull its data
         const ss = SpreadsheetApp.getActiveSpreadsheet();
-        const spraySheetRegex = /W\d{1,2}*/;
+        const spraySheetRegex = new RegExp("W\d{1,2}*");
         const sheets = ss.getSheets();
         const spraySheet = sheets.find((sheet) => spraySheetRegex.test(sheet.getName()));
         const data = spraySheet.getDataRange().getValues();
