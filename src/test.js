@@ -1,5 +1,5 @@
 function testList() {
-    const finalList = getChemicalList();
+    const finalList = Utils.getChemicalList();
     const testCode1 = '11&12.1&2.1&2&3.1&2';
     const testCode2 = '1.0.1&3.1';
     const testCode3 = '1.0.0.0';
@@ -7,7 +7,11 @@ function testList() {
     const testCode5 = 'A.0.0.1';
     const testCodes = [testCode1, testCode2, testCode3, testCode4, testCode5];
     for (let mix of testCodes) {
-        const currentMix = new SprayMix(mix, finalList);
+        const currentMix = SprayMix.newSprayMix(mix,finalList);
         console.log(currentMix.names, currentMix.cost);
     }
+}
+function testGetSprayTab() {
+    const data = Utils.getSpraySheetData();
+    console.log(data);
 }

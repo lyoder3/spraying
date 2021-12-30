@@ -47,7 +47,12 @@ namespace Utils {
         data.shift();
         return data;
     }
-
+    export function getSpraySheetData() {
+        const spraySheet = getSheetByRegex(new RegExp("W\\d{1,2}","i"));
+        const data = spraySheet.getDataRange().getValues();
+        data.shift();
+        return data;
+    }
     /**
      * @param regex {RegExp} - The regular expression to search for across the sheet names on the current SpreadSheet
      */
@@ -85,7 +90,7 @@ namespace Utils {
     {
         // Find the spray sheet and pull its data
         const ss = SpreadsheetApp.getActiveSpreadsheet();
-        const spraySheetRegex = new RegExp("W\d{1,2}*");
+        const spraySheetRegex = new RegExp("W\d");
         const sheets = ss.getSheets();
         const spraySheet = sheets.find((sheet) => spraySheetRegex.test(sheet.getName()));
         const data = spraySheet.getDataRange().getValues();
