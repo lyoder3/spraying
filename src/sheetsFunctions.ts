@@ -35,6 +35,10 @@ function TRUCKLOADING() {
     for (const vehicle of trucks) {
       const amount = chemicalAmtsByTruck[chemical][vehicle] as number;
       const convertedAmount = Utils.convertToLargestUnitOfType(amount, unit);
+      if (isNaN(convertedAmount)) {
+        chemicalRow.push(0);
+        continue;
+      }
       chemicalRow.push(convertedAmount);
     }
     chemicalRow.push(convertedUnit);

@@ -50,7 +50,6 @@ namespace Utils {
     export function getSpraySheetData() {
         const spraySheet = getSheetByRegex(new RegExp("W\\d{1,2}","i"));
         const data = spraySheet.getDataRange().getValues();
-        data.shift();
         return data;
     }
     /**
@@ -90,11 +89,7 @@ namespace Utils {
     {
         // Find the spray sheet and pull its data
         const ss = SpreadsheetApp.getActiveSpreadsheet();
-        const spraySheetRegex = new RegExp("W\d");
-        const sheets = ss.getSheets();
-        const spraySheet = sheets.find((sheet) => spraySheetRegex.test(sheet.getName()));
-        const data = spraySheet.getDataRange().getValues();
-
+        const data = Utils.getSpraySheetData();
         // Extract headers and find the indices of the columns we care about
         const header = data.shift();
         const columns = findColumns(header);
@@ -103,14 +98,24 @@ namespace Utils {
         // Prepare to loop over the sheet and extract acreage by chemical and by truck 
         const output:ChemTruck = {};
         const chems = getChemicalList();
+        const mixAssigned = data.filter((row) => {
+            const [acreage, mix, truck] = [Number(row[columns.acreage]), row[columns.mix].toString() as string, row[columns.truck].toString() as string];
+
+            if (acreage !== 0 && mix !=='' && truck !== '') {
+                return true;
+            }
+            return false;
+        })
         
-        for (const row of data) {
+        for (const row of mixAssigned) {
             const [acreage, mix, truck] = [Number(row[columns.acreage]), row[columns.mix].toString() as string, row[columns.truck].toString() as string];
             const mixObj = SprayMix.newSprayMix(mix,chems);
             for (const chemical of mixObj.names) {
                 const chemObj = mixObj.getChemical(chemical);
                 output[chemical] = output[chemical] || {};
-                output[chemical][truck] = output[chemical][truck] += (chemObj.rate*acreage*1.1) || chemObj.rate*acreage;
+                const amt = chemObj.rate*acreage*1.1;
+                console.log(amt.toString());
+                output[chemical][truck] = output[chemical][truck] + (chemObj.rate*acreage*1.1) || chemObj.rate*acreage*1.1;
                 output[chemical]['units'] = chemObj.unit;
             }
         }
@@ -120,9 +125,9 @@ namespace Utils {
         const columns = {acreage: -1, mix: -1, truck: -1};
         
         for (let i = 0; i < header.length; i++) {
-            if (ACREAGE_REGEX.test(header[i].toString())) columns["acreage"] == i;
-            if (TRUCK_REGEX.test(header[i].toString())) columns["truck"] == i;
-            if (MIX_REGEX.test(header[i].toString())) columns["mix"] == i;
+            if (ACREAGE_REGEX.test(header[i].toString())) columns["acreage"] = i;
+            if (TRUCK_REGEX.test(header[i].toString())) columns["truck"] = i;
+            if (MIX_REGEX.test(header[i].toString())) columns["mix"] = i;
 
             if (columns.acreage > 0 && columns.mix > 0 && columns.truck > 0) {
                 break;
