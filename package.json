@@ -1,5 +1,28 @@
 {
+<<<<<<< HEAD
   "dependencies": {
     "@types/google-apps-script": "^1.0.41"
+=======
+  "name": "spray_calculator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "doc": "jsdoc -c jsdoc.json"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/google-apps-script": "^1.0.20",
+    "@types/node": "^14.14.14",
+    "csv-parser": "^3.0.0",
+    "ts-node": "^9.1.1",
+    "typescript": "4.0.5"
+  },
+  "devDependencies": {
+    "jsdoc": "^3.6.6",
+    "typedoc-plugin-tutorials": "^0.0.1-alpha.1"
+>>>>>>> 6b04af9e8c39fa933f05ced0570a52260673fd8c
   }
 }
