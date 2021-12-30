@@ -113,9 +113,8 @@ namespace Utils {
             for (const chemical of mixObj.names) {
                 const chemObj = mixObj.getChemical(chemical);
                 output[chemical] = output[chemical] || {};
-                const amt = chemObj.rate*acreage*1.1;
-                console.log(amt.toString());
-                output[chemical][truck] = output[chemical][truck] + (chemObj.rate*acreage*1.1) || chemObj.rate*acreage*1.1;
+                const roundedUpAmount = chemObj.rate*acreage*1.1;
+                output[chemical][truck] = output[chemical][truck] + roundedUpAmount || roundedUpAmount;
                 output[chemical]['units'] = chemObj.unit;
             }
         }
