@@ -1,0 +1,8 @@
+{
+    "compilerOptions": {
+        "lib": ["ESNext"],
+        "target":"ESNext",
+        "experimentalDecorators": true,
+        "types": ["google-apps-script"]
+    }
+}
